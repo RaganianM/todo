@@ -39,9 +39,10 @@
 							<v-icon v-if="todo.isDone" color="green lighten-2">mdi-check</v-icon>
 						</div>
 						<v-list-item-content>
-							<!--<v-list-item-title class="text-h5" style="color: black" :class="[todo.isDone ? 'done-todo' : '']">{{ todo.name }}</v-list-item-title>-->
-							<div @dblclick="editTodo(todo)" @blur="endEdit(todo)">
+							<div @dblclick="editTodo(todo, ind)" @blur="endEdit(todo)">
 								<v-text-field
+									class="text-h5"
+									:class="[todo.isDone ? 'done-todo' : '']"
 									type="text"
 									@blur="endEdit(todo)"
 									:disabled="!todo.isEdit"
@@ -169,14 +170,12 @@ export default {
       this.isShowAll = true
       this.todoList.forEach(el => (el.isShow = true))
     },
-    editTodo (todo) {
+    editTodo (todo, ind) {
       todo.isEdit = true
-      console.log(this.$refs.inputTodo)
-      this.$refs.inputTodo[0].focus()
+      setTimeout(() => (this.$refs.inputTodo[ind].focus()), 1)
     },
     endEdit (todo) {
       todo.isEdit = false
-      // this.$refs.inputTodo.focus()
     }
   }
 }
@@ -225,5 +224,9 @@ export default {
 	.done-todo {
 		text-decoration: line-through;
 		color: rgb(195, 195, 195);
+	}
+
+	.theme--light.v-input--is-disabled {
+		color: black !important;
 	}
 </style>
