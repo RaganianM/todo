@@ -23,7 +23,12 @@
 				</v-icon>
 			</v-text-field>
 
-			<v-list v-if="todoList.length" class="todos-list py-0" id="todos-list">
+			<v-list
+				flat
+				v-if="todoList.length"
+				class="todos-list py-0"
+				id="todos-list"
+			>
 				<v-list-item-group
 					v-for="(todo, ind) in todoList"
 					:key="ind"
@@ -41,13 +46,17 @@
 						<v-list-item-content>
 							<div @dblclick="editTodo(todo, ind)" @blur="endEdit(todo)">
 								<v-text-field
+									solo
+									flat
+									hide-details="auto"
 									class="text-h5"
-									:class="[todo.isDone ? 'done-todo' : '']"
+									:class="[todo.isDone && !todo.isEdit ? 'done-todo' : '']"
 									type="text"
 									@blur="endEdit(todo)"
 									:disabled="!todo.isEdit"
 									ref="inputTodo"
 									v-model="todo.name"
+									id="input-todo"
 								>{{ todo.name }}</v-text-field>
 							</div>
 						</v-list-item-content>
@@ -112,21 +121,38 @@ export default {
       return itemsLeft
     }
   },
+  mounted () {
+    if (localStorage.getItem('todos')) {
+      try {
+        this.todoList = JSON.parse(localStorage.getItem('todos'))
+      } catch (e) {
+        localStorage.removeTodo('todos')
+      }
+    }
+  },
   methods: {
     addTodo () {
+      if (!this.newTodo) return
       this.todoList.push({
-        name: this.newTodo,
+        name: this.newTodo.trim(),
         isDone: false,
         isShow: true,
         isEdit: false
       })
       this.newTodo = ''
+      this.saveTodo()
+    },
+    saveTodo () {
+      const parsed = JSON.stringify(this.todoList)
+      localStorage.setItem('todos', parsed)
     },
     removeTodo (todo) {
-      this.todoList = this.todoList.filter(item => item !== todo)
+      this.todoList.splice(todo, 1)
+      this.saveTodo()
     },
     toggleChecked (todo, ind) {
       todo.isDone = !todo.isDone
+      this.saveTodo()
     },
     toggleAllTodosChecked () {
       const isSomeTodoChecked = this.todoList.some(el => el.isDone)
@@ -142,9 +168,11 @@ export default {
           break
         }
       }
+      this.saveTodo()
     },
     clearCompleted () {
       this.todoList = this.todoList.filter(el => !el.isDone)
+      this.saveTodo()
     },
     showActive () {
       this.isShowActive = true
@@ -176,6 +204,7 @@ export default {
     },
     endEdit (todo) {
       todo.isEdit = false
+      this.saveTodo()
     }
   }
 }
@@ -224,9 +253,5 @@ export default {
 	.done-todo {
 		text-decoration: line-through;
 		color: rgb(195, 195, 195);
-	}
-
-	.theme--light.v-input--is-disabled {
-		color: black !important;
 	}
 </style>
