@@ -43,7 +43,7 @@
 						>
 							<v-icon v-if="todo.isDone" color="green lighten-2">mdi-check</v-icon>
 						</div>
-						<v-list-item-content>
+						<v-list-item-content class="py-1">
 							<div @dblclick="editTodo(todo, ind)" @blur="endEdit(todo)">
 								<v-text-field
 									solo
@@ -56,8 +56,7 @@
 									:disabled="!todo.isEdit"
 									ref="inputTodo"
 									v-model="todo.name"
-									id="input-todo"
-								>{{ todo.name }}</v-text-field>
+								></v-text-field>
 							</div>
 						</v-list-item-content>
 						<v-list-item-icon :class="{ 'show-close-button': hover }" class="close-button my-auto" @click="removeTodo(todo, ind)">
@@ -73,7 +72,7 @@
 			</v-list>
 			<div v-if="todoList.length" class="footer d-flex justify-space-between align-center py-1 px-3">
 				<div>
-					<span v-if="itemsLeftCount > 1" class="grey--text text--darken-2 text-body-2">{{ itemsLeftCount }} items left</span>
+					<span v-if="itemsLeftCount > 1 || !itemsLeftCount" class="grey--text text--darken-2 text-body-2">{{ itemsLeftCount }} items left</span>
 					<span v-else class="grey--text text--darken-2 text-body-2">{{ itemsLeftCount }} item left</span>
 				</div>
 				<div class="pa-1">
@@ -110,7 +109,8 @@ export default {
     isShowAll: false,
     isShowActive: false,
     isShowCompleted: false,
-    disableInput: true
+    disableInput: true,
+    disabled: false
   }),
   computed: {
     itemsLeftCount: function () {
